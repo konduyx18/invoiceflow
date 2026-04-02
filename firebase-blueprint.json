@@ -1,0 +1,148 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "companyName": { "type": "string" },
+        "companyLogo": { "type": "string" },
+        "companyAddress": { "type": "string" },
+        "phone": { "type": "string" },
+        "subscriptionPlan": { "type": "string", "enum": ["FREE", "PRO"] },
+        "stripeCustomerId": { "type": "string" },
+        "stripeSubscriptionId": { "type": "string" },
+        "invoiceCount": { "type": "number" },
+        "invoiceCountResetDate": { "type": "string", "format": "date" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Client": {
+      "title": "Client",
+      "description": "Client information for invoices",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "company": { "type": "string" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "zipCode": { "type": "string" },
+        "country": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "userId"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Invoice details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "clientId": { "type": "string" },
+        "invoiceNumber": { "type": "string" },
+        "status": { "type": "string", "enum": ["DRAFT", "SENT", "VIEWED", "PAID", "OVERDUE", "CANCELLED"] },
+        "issueDate": { "type": "string", "format": "date" },
+        "dueDate": { "type": "string", "format": "date" },
+        "subtotal": { "type": "number" },
+        "taxRate": { "type": "number" },
+        "taxAmount": { "type": "number" },
+        "discountPercent": { "type": "number" },
+        "discountAmount": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "currency": { "type": "string" },
+        "notes": { "type": "string" },
+        "paymentTerms": { "type": "string" },
+        "paidAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "quantity": { "type": "integer" },
+              "unitPrice": { "type": "number" },
+              "amount": { "type": "number" }
+            }
+          }
+        }
+      },
+      "required": ["userId", "clientId", "invoiceNumber", "status", "dueDate", "totalAmount"]
+    },
+    "RecurringInvoice": {
+      "title": "Recurring Invoice",
+      "description": "Recurring invoice schedule and template",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "clientId": { "type": "string" },
+        "frequency": { "type": "string", "enum": ["WEEKLY", "MONTHLY", "YEARLY"] },
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" },
+        "lastGeneratedDate": { "type": "string", "format": "date" },
+        "nextGenerationDate": { "type": "string", "format": "date" },
+        "isActive": { "type": "boolean" },
+        "template": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "clientId", "frequency", "startDate", "nextGenerationDate", "isActive", "template"]
+    },
+    "InvoiceTemplate": {
+      "title": "Invoice Template",
+      "description": "Reusable invoice template",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "items": { "type": "array" },
+        "taxRate": { "type": "number" },
+        "discountPercent": { "type": "number" },
+        "currency": { "type": "string" },
+        "notes": { "type": "string" },
+        "paymentTerms": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "items"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile"
+    },
+    "/users/{userId}/clients/{clientId}": {
+      "schema": "Client",
+      "description": "User's clients"
+    },
+    "/users/{userId}/invoices/{invoiceId}": {
+      "schema": "Invoice",
+      "description": "User's invoices"
+    },
+    "/recurring_invoices/{recurringId}": {
+      "schema": "RecurringInvoice",
+      "description": "Recurring invoice schedules"
+    },
+    "/invoice_templates/{templateId}": {
+      "schema": "InvoiceTemplate",
+      "description": "User's invoice templates"
+    }
+  }
+}
